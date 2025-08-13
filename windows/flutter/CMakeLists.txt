@@ -1,10 +1,14 @@
 # This file controls Flutter-level build steps. It should not be edited.
 cmake_minimum_required(VERSION 3.14)
 
+# --- Paths to Flutter-managed (ephemeral) files ---
 set(EPHEMERAL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ephemeral")
 
 # Configuration provided via flutter tool.
-include(${EPHEMERAL_DIR}/generated_config.cmake)
+# These two includes are REQUIRED so that helper functions like
+# `apply_standard_settings` are defined before being used below.
+include("${EPHEMERAL_DIR}/generated_config.cmake")
+include("${EPHEMERAL_DIR}/flutter_windows.cmake")
 
 # TODO: Move the rest of this into files in ephemeral. See
 # https://github.com/flutter/flutter/issues/57146.
@@ -33,10 +37,13 @@ list(APPEND FLUTTER_LIBRARY_HEADERS
 )
 list(TRANSFORM FLUTTER_LIBRARY_HEADERS PREPEND "${EPHEMERAL_DIR}/")
 add_library(flutter INTERFACE)
-target_include_directories(flutter INTERFACE
-  "${EPHEMERAL_DIR}"
-)
+
+# Make ephemeral headers visible to dependents.
+target_include_directories(flutter INTERFACE "${EPHEMERAL_DIR}")
+
+# Link against the generated Flutter DLL import library.
 target_link_libraries(flutter INTERFACE "${FLUTTER_LIBRARY}.lib")
+
 add_dependencies(flutter flutter_assemble)
 
 # === Wrapper ===
@@ -62,13 +69,11 @@ add_library(flutter_wrapper_plugin STATIC
 )
 apply_standard_settings(flutter_wrapper_plugin)
 set_target_properties(flutter_wrapper_plugin PROPERTIES
-  POSITION_INDEPENDENT_CODE ON)
-set_target_properties(flutter_wrapper_plugin PROPERTIES
-  CXX_VISIBILITY_PRESET hidden)
-target_link_libraries(flutter_wrapper_plugin PUBLIC flutter)
-target_include_directories(flutter_wrapper_plugin PUBLIC
-  "${WRAPPER_ROOT}/include"
+  POSITION_INDEPENDENT_CODE ON
+  CXX_VISIBILITY_PRESET hidden
 )
+target_link_libraries(flutter_wrapper_plugin PUBLIC flutter)
+target_include_directories(flutter_wrapper_plugin PUBLIC "${WRAPPER_ROOT}/include")
 add_dependencies(flutter_wrapper_plugin flutter_assemble)
 
 # Wrapper sources needed for the runner.
@@ -78,9 +83,7 @@ add_library(flutter_wrapper_app STATIC
 )
 apply_standard_settings(flutter_wrapper_app)
 target_link_libraries(flutter_wrapper_app PUBLIC flutter)
-target_include_directories(flutter_wrapper_app PUBLIC
-  "${WRAPPER_ROOT}/include"
-)
+target_include_directories(flutter_wrapper_app PUBLIC "${WRAPPER_ROOT}/include")
 add_dependencies(flutter_wrapper_app flutter_assemble)
 
 # === Flutter tool backend ===

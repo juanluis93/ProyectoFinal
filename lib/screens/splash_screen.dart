@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import '../utils/constants.dart';
 import 'main_screen.dart';
+import 'package:provider/provider.dart';
+import '../providers/auth_provider.dart';
+import 'login/login_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -46,14 +49,29 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Future<void> _navigateToHome() async {
-    await Future.delayed(const Duration(seconds: 3));
+  // Esperar animación
+  await Future.delayed(const Duration(seconds: 3));
 
-    if (mounted) {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const MainScreen()),
-      );
-    }
+  if (!mounted) return;
+
+  final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
+  // Esperar hasta que termine la inicialización si quieres
+  while (!authProvider.initialized) {
+    await Future.delayed(const Duration(milliseconds: 100));
   }
+
+  if (authProvider.isAuthenticated) {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (_) => const MainScreen()),
+    );
+  } else {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (_) => const LoginScreen()),
+    );
+  }
+}
+
 
   @override
   void dispose() {
@@ -143,7 +161,7 @@ class _SplashScreenState extends State<SplashScreen>
 
                   const SizedBox(height: 60),
 
-                  // Indicador de carga
+                 
                   FadeTransition(
                     opacity: _fadeAnimation,
                     child: const SizedBox(
