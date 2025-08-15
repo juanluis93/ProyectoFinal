@@ -1,0 +1,8 @@
+{
+  "cedula": "001-1234567-8",
+  "nombre": "Juan",
+  "apellido": "Perez",
+  "correo": "juan@example.com",
+  "password": "123456",
+  "telefono": "809-555-0000"
+}
