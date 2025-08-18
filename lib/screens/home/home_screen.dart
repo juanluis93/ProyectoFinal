@@ -78,24 +78,49 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.background,
       body: Column(
         children: [
-          // Agregar padding superior para el status bar
+          // Padding superior
           SizedBox(height: MediaQuery.of(context).padding.top),
 
-          // Header personalizado
+          // Header con gradiente
           Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(
               horizontal: AppConstants.defaultPadding,
               vertical: 16,
             ),
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFF2E7D32), Color(0xFF66BB6A)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black26,
+                  offset: Offset(0, 3),
+                  blurRadius: 6,
+                ),
+              ],
+            ),
             child: Row(
               children: [
+                CircleAvatar(
+                  radius: 20,
+                  backgroundColor: Colors.white,
+                  child: Icon(Icons.eco, color: AppColors.primary),
+                ),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     'Ministerio Ambiente RD',
-                    style: AppTextStyles.heading1,
+                    style: AppTextStyles.heading1.copyWith(
+                      fontSize: 18,
+                      color: AppColors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -106,6 +131,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         authProvider.isAuthenticated
                             ? Icons.logout
                             : Icons.login,
+                        color: Colors.white,
                       ),
                       onPressed: () {
                         if (authProvider.isAuthenticated) {
@@ -121,7 +147,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
 
-          // Contenido scrollable
+          // Contenido principal
           Expanded(
             child: SingleChildScrollView(
               child: Column(
@@ -132,15 +158,41 @@ class _HomeScreenState extends State<HomeScreen> {
 
                   const SizedBox(height: 24),
 
-                  // Sección de acceso rápido
+                  // Acceso rápido
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppConstants.defaultPadding,
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.flash_on, color: AppColors.primary),
+                        const SizedBox(width: 8),
+                        Text('Acceso Rápido', style: AppTextStyles.heading2),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
                   _buildQuickAccessSection(),
 
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 32),
 
-                  // Sección de información
+                  // Información
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppConstants.defaultPadding,
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.info, color: AppColors.primary),
+                        const SizedBox(width: 8),
+                        Text('Información', style: AppTextStyles.heading2),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
                   _buildInfoSection(),
 
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 32),
                 ],
               ),
             ),

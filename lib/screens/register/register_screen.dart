@@ -68,14 +68,39 @@ class _RegisterScreenState extends State<RegisterScreen> {
       backgroundColor: Colors.green.shade50,
       appBar: AppBar(
         backgroundColor: Colors.green.shade700,
-        title: const Text("Registro"),
+        elevation: 0,
+        title: const Text(
+          "Registro",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Form(
           key: _formKey,
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              // Logo institucional
+              SizedBox(
+                height: 90,
+                child: Image.asset("assets/logo.png", fit: BoxFit.contain),
+              ),
+              const SizedBox(height: 16),
+
+              Text(
+                "Ministerio de Medio Ambiente",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 20,
+                  color: Colors.green.shade900,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 32),
+
+              // Cédula
               TextFormField(
                 controller: _cedulaController,
                 decoration: const InputDecoration(
@@ -88,6 +113,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     value == null || value.isEmpty ? "Ingresa tu cédula" : null,
               ),
               const SizedBox(height: 16),
+
+              // Matrícula
               TextFormField(
                 controller: _matriculaController,
                 decoration: const InputDecoration(
@@ -100,6 +127,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     : null,
               ),
               const SizedBox(height: 16),
+
+              // Teléfono
               TextFormField(
                 controller: _telefonoController,
                 decoration: const InputDecoration(
@@ -113,6 +142,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     : null,
               ),
               const SizedBox(height: 16),
+
+              // Nombre
               TextFormField(
                 controller: _nombreController,
                 decoration: const InputDecoration(
@@ -124,6 +155,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     value == null || value.isEmpty ? "Ingresa tu nombre" : null,
               ),
               const SizedBox(height: 16),
+
+              // Apellido
               TextFormField(
                 controller: _apellidoController,
                 decoration: const InputDecoration(
@@ -136,6 +169,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     : null,
               ),
               const SizedBox(height: 16),
+
+              // Email
               TextFormField(
                 controller: _emailController,
                 decoration: const InputDecoration(
@@ -154,6 +189,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 },
               ),
               const SizedBox(height: 16),
+
+              // Contraseña
               TextFormField(
                 controller: _passwordController,
                 obscureText: _obscurePassword,
@@ -185,6 +222,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 },
               ),
               const SizedBox(height: 16),
+
+              // Confirmar contraseña
               TextFormField(
                 controller: _confirmPasswordController,
                 obscureText: _obscureConfirmPassword,
@@ -213,16 +252,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 },
               ),
               const SizedBox(height: 24),
+
+              // Botón registrar
               ElevatedButton(
                 onPressed: _isLoading ? null : _register,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green.shade700,
                   padding: const EdgeInsets.symmetric(vertical: 14),
-                  minimumSize: const Size(double.infinity, 48),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 child: _isLoading
                     ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text("Registrarse"),
+                    : const Text(
+                        "Registrarse",
+                        style: TextStyle(fontSize: 16, color: Colors.white),
+                      ),
               ),
             ],
           ),

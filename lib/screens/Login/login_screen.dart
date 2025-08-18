@@ -59,24 +59,32 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Icon(Icons.eco, size: 80, color: Colors.green.shade700),
+                // Logo institucional
+                SizedBox(
+                  height: 100,
+                  child: Image.asset("assets/logo.png", fit: BoxFit.contain),
+                ),
                 const SizedBox(height: 16),
+                // Nombre de la institución
                 Text(
                   "Ministerio de Medio Ambiente",
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 20,
+                    fontSize: 22,
                     color: Colors.green.shade900,
                     fontWeight: FontWeight.bold,
+                    letterSpacing: 1.2,
                   ),
                 ),
                 const SizedBox(height: 32),
+
+                // Campo correo
                 TextFormField(
                   controller: _emailController,
                   decoration: const InputDecoration(
                     labelText: "Correo electrónico",
                     border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.email),
+                    prefixIcon: Icon(Icons.email_outlined),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -89,13 +97,15 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                 ),
                 const SizedBox(height: 16),
+
+                // Campo contraseña
                 TextFormField(
                   controller: _passwordController,
                   obscureText: _obscurePassword,
                   decoration: InputDecoration(
                     labelText: "Contraseña",
                     border: const OutlineInputBorder(),
-                    prefixIcon: const Icon(Icons.lock),
+                    prefixIcon: const Icon(Icons.lock_outline),
                     suffixIcon: IconButton(
                       icon: Icon(
                         _obscurePassword
@@ -120,7 +130,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                 ),
                 const SizedBox(height: 16),
-                // Mostrar error en rojo debajo de los campos
+
+                // Error de login
                 Consumer<AuthProvider>(
                   builder: (context, authProvider, child) {
                     if (authProvider.errorMessage != null) {
@@ -160,11 +171,16 @@ class _LoginScreenState extends State<LoginScreen> {
                     return const SizedBox.shrink();
                   },
                 ),
+
+                // Botón iniciar sesión
                 ElevatedButton(
                   onPressed: authProvider.isLoading ? null : _login,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green.shade700,
                     padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                   child: authProvider.isLoading
                       ? const SizedBox(
@@ -177,10 +193,12 @@ class _LoginScreenState extends State<LoginScreen> {
                         )
                       : const Text(
                           "Iniciar sesión",
-                          style: TextStyle(fontSize: 16),
+                          style: TextStyle(fontSize: 16, color: Colors.white),
                         ),
                 ),
                 const SizedBox(height: 16),
+
+                // Botón registrarse
                 TextButton(
                   onPressed: () {
                     Navigator.push(
@@ -190,7 +208,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     );
                   },
-                  child: const Text("¿No tienes cuenta? Regístrate aquí"),
+                  child: Text(
+                    "¿No tienes cuenta? Regístrate aquí",
+                    style: TextStyle(color: Colors.green.shade800),
+                  ),
                 ),
               ],
             ),

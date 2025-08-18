@@ -40,64 +40,138 @@ class _ServicesScreenState extends State<ServicesScreen> {
     }
   }
 
+  Widget _buildServiceCard(Servicio servicio) {
+    return InkWell(
+      onTap: () => _showServiceDetail(servicio),
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.green.shade100,
+              blurRadius: 8,
+              offset: Offset(0, 2),
+            ),
+          ],
+          border: Border.all(color: Colors.green.shade100),
+        ),
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            if (servicio.imagen != null && servicio.imagen!.isNotEmpty)
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: NetworkImageWidget(
+                  imageUrl: servicio.imagen!,
+                  width: 70,
+                  height: 70,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            if (servicio.imagen != null && servicio.imagen!.isNotEmpty)
+              const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    servicio.nombre,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.green.shade900,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    servicio.descripcion,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.green.shade700,
+                    ),
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            Icon(
+              Icons.arrow_forward_ios,
+              size: 18,
+              color: Colors.green.shade700,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          // Agregar padding superior para el status bar
-          SizedBox(height: MediaQuery.of(context).padding.top),
-
-          // Título de la pantalla
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppConstants.defaultPadding,
-              vertical: 16,
-            ),
-            child: Text(
-              'Servicios',
-              style: AppTextStyles.heading1,
-              textAlign: TextAlign.center,
-            ),
-          ),
-
-          // Contenido
-          Expanded(
-            child: _isLoading
-                ? const LoadingWidget(message: 'Cargando servicios...')
-                : _servicios.isEmpty
-                ? EmptyStateWidget(
-                    message: 'No hay servicios disponibles',
-                    onRetry: _loadServicios,
-                  )
-                : RefreshIndicator(
-                    onRefresh: _loadServicios,
-                    child: ListView.builder(
-                      padding: const EdgeInsets.all(
-                        AppConstants.defaultPadding,
+      backgroundColor: Colors.green.shade50,
+      body: SafeArea(
+        child: Center(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Header con logo y nombre institucional
+              SizedBox(height: 24),
+              SizedBox(
+                height: 80,
+                child: Image.asset("assets/logo.png", fit: BoxFit.contain),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                "Ministerio de Medio Ambiente",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 22,
+                  color: Colors.green.shade900,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.2,
+                ),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                "Servicios",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 20,
+                  color: Colors.green.shade700,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 24),
+              Expanded(
+                child: _isLoading
+                    ? const LoadingWidget(message: 'Cargando servicios...')
+                    : _servicios.isEmpty
+                    ? EmptyStateWidget(
+                        message: 'No hay servicios disponibles',
+                        onRetry: _loadServicios,
+                      )
+                    : RefreshIndicator(
+                        onRefresh: _loadServicios,
+                        child: ListView.builder(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          itemCount: _servicios.length,
+                          itemBuilder: (context, index) {
+                            final servicio = _servicios[index];
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 16),
+                              child: _buildServiceCard(servicio),
+                            );
+                          },
+                        ),
                       ),
-                      itemCount: _servicios.length,
-                      itemBuilder: (context, index) {
-                        final servicio = _servicios[index];
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
-                          child: InfoCard(
-                            title: servicio.nombre,
-                            description: servicio.descripcion,
-                            imageUrl: servicio.imagen,
-                            onTap: () => _showServiceDetail(servicio),
-                            trailing: const Icon(
-                              Icons.arrow_forward_ios,
-                              size: 16,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
