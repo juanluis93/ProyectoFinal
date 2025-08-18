@@ -7,23 +7,41 @@ class AuthService {
   final ApiService _apiService = ApiService();
 
   Future<User?> login(String email, String password) async {
-    // Primero intentar con la API real
+    // Intentar login con la API real
     try {
       final user = await _apiService.login(email, password);
-      if (user != null) {
+      if (user != null && user.token != null && user.token!.isNotEmpty) {
+        // Login exitoso con token dinámico
         return user;
       }
     } catch (e) {
       print('Error al hacer login con API: $e');
     }
-
     // Si falla la API, usar el sistema local como fallback
     return _localAuthService.login(email, password);
   }
 
-  Future<bool> register(User user) {
-    // Usar solo sistema local para registro
-    return _localAuthService.register(user);
+  Future<bool> register(User user) async {
+    // Intentar registro con la API real
+    try {
+      // Aquí deberías tener un método en ApiService para registrar usuario
+      // Por ejemplo: await _apiService.register(user);
+      // Si la API responde correctamente, hacer login automático
+      final registroExitoso = await _apiService.register(user);
+      if (registroExitoso) {
+        final userLogueado = await _apiService.login(user.email, user.password);
+        if (userLogueado != null &&
+            userLogueado.token != null &&
+            userLogueado.token!.isNotEmpty) {
+          return true;
+        }
+      }
+      return false;
+    } catch (e) {
+      print('Error al registrar usuario con API: $e');
+      // Si falla la API, usar el sistema local como fallback
+      return await _localAuthService.register(user);
+    }
   }
 
   Future<void> logout() async {

@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../utils/constants.dart';
 import '../../widgets/common_widgets.dart';
 import '../../providers/auth_provider.dart';
+import '../reportes/reportes_screen.dart';
 import '../normativas/normativas_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -86,7 +87,13 @@ class ProfileScreen extends StatelessWidget {
               Icons.report,
               'Mis Reportes',
               'Ver mis reportes ambientales',
-              () => _showComingSoon(context),
+              () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const ReportesScreen(),
+                  ),
+                );
+              },
             ),
             _buildMenuItem(
               Icons.map,

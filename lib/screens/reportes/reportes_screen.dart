@@ -45,24 +45,14 @@ class _ReportesScreenState extends State<ReportesScreen>
 
     try {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
-      final user = authProvider.user;
-
-      if (user != null && user.id.isNotEmpty) {
-        final reportes = await _apiService.getReportesUsuario(
-          user.id,
-          '', // Sin token por ahora
-        );
-
-        if (mounted) {
-          setState(() {
-            _misReportes = reportes;
-            _isLoading = false;
-          });
-        }
-      } else {
-        // Usuario no autenticado, mostrar reportes de ejemplo
+      String token = '';
+      if (authProvider.isAuthenticated && authProvider.token != null) {
+        token = authProvider.token!;
+      }
+      final reportes = await _apiService.getReportesUsuario('', token);
+      if (mounted) {
         setState(() {
-          _misReportes = _getReportesEjemplo();
+          _misReportes = reportes;
           _isLoading = false;
         });
       }
@@ -71,8 +61,7 @@ class _ReportesScreenState extends State<ReportesScreen>
         setState(() {
           _errorMessage = e.toString();
           _isLoading = false;
-          // En caso de error, mostrar datos de ejemplo
-          _misReportes = _getReportesEjemplo();
+          _misReportes = [];
         });
       }
     }

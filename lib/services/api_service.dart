@@ -13,6 +13,41 @@ import '../models/voluntario.dart';
 import '../models/user.dart';
 
 class ApiService {
+  // Registro de usuario usando el endpoint actual
+  Future<bool> register(User user) async {
+    try {
+      final Map<String, String> formHeaders = {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Accept': 'application/json',
+      };
+      final formBody =
+          'cedula=${Uri.encodeComponent(user.cedula.toString())}'
+          '&nombre=${Uri.encodeComponent(user.nombre.toString())}'
+          '&apellido=${Uri.encodeComponent(user.apellido.toString())}'
+          '&correo=${Uri.encodeComponent(user.email.toString())}'
+          '&password=${Uri.encodeComponent(user.password.toString())}'
+          '&telefono=${Uri.encodeComponent(user.telefono.toString())}'
+          '&matricula=${Uri.encodeComponent(user.id.toString())}';
+      final response = await http.post(
+        Uri.parse('$baseUrl/auth/register'),
+        headers: formHeaders,
+        body: formBody,
+      );
+
+      print('Registro usuario status: ${response.statusCode}');
+      print('Registro usuario body: ${response.body}');
+
+      if (response.statusCode == 201) {
+        final data = json.decode(response.body);
+        return data['token'] != null && data['usuario'] != null;
+      }
+      return false;
+    } catch (e) {
+      print('Error al registrar usuario: $e');
+      return false;
+    }
+  }
+
   static const String baseUrl = 'https://adamix.net/medioambiente';
 
   // Headers comunes
@@ -21,24 +56,45 @@ class ApiService {
     'Accept': 'application/json',
   };
 
-  // Autenticación
+  // Login usando el endpoint actual
   Future<User?> login(String email, String password) async {
     try {
+      print('Intentando login con: correo=$email, password=$password');
+      final Map<String, String> formHeaders = {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Accept': 'application/json',
+      };
+      final formBody =
+          'correo=${Uri.encodeComponent(email)}&password=${Uri.encodeComponent(password)}';
       final response = await http.post(
-        Uri.parse('$baseUrl/usuarios.php'),
-        headers: _headers,
-        body: json.encode({
-          'accion': 'login',
-          'email': email,
-          'password': password,
-        }),
+        Uri.parse('$baseUrl/auth/login'),
+        headers: formHeaders,
+        body: formBody,
       );
+      print('Respuesta status: ${response.statusCode}');
+      print('Respuesta body: ${response.body}');
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        if (data['exito'] == true) {
-          return User.fromJson(data['usuario']);
+        print('Respuesta decodificada: $data');
+        if (data['token'] != null && data['usuario'] != null) {
+          // Guardar el token en el modelo User
+          final user = User.fromJson(data['usuario']);
+          return User(
+            id: user.id,
+            cedula: user.cedula,
+            nombre: user.nombre,
+            password: user.password,
+            apellido: user.apellido,
+            email: user.email,
+            telefono: user.telefono,
+            token: data['token'],
+          );
         }
+      } else {
+        print(
+          'Error en login: status=${response.statusCode}, body=${response.body}',
+        );
       }
       return null;
     } catch (e) {
@@ -427,16 +483,15 @@ class ApiService {
   ) async {
     try {
       final response = await http.get(
-        Uri.parse('$baseUrl/reportes.php?usuario_id=$usuarioId'),
+        Uri.parse('$baseUrl/reportes'),
         headers: {..._headers, 'Authorization': 'Bearer $token'},
       );
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        if (data['exito'] == true) {
-          return (data['reportes'] as List)
-              .map((reporte) => Reporte.fromJson(reporte))
-              .toList();
+        // La API devuelve directamente un array de reportes
+        if (data is List) {
+          return data.map((reporte) => Reporte.fromJson(reporte)).toList();
         }
       }
       return [];

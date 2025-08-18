@@ -13,6 +13,9 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
 
+  final _cedulaController = TextEditingController();
+  final _matriculaController = TextEditingController();
+  final _telefonoController = TextEditingController();
   final _nombreController = TextEditingController();
   final _apellidoController = TextEditingController();
   final _emailController = TextEditingController();
@@ -31,13 +34,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
     final newUser = User(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      cedula: '', // Opcional
+      id: _matriculaController.text.trim(),
+      cedula: _cedulaController.text.trim(),
       nombre: _nombreController.text.trim(),
       apellido: _apellidoController.text.trim(),
       email: _emailController.text.trim(),
       password: _passwordController.text,
-      telefono: '', // Opcional
+      telefono: _telefonoController.text.trim(),
       token: null,
     );
 
@@ -47,7 +50,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Registro exitoso. Por favor inicia sesión.")),
+        const SnackBar(
+          content: Text("Registro exitoso. Por favor inicia sesión."),
+        ),
       );
       Navigator.pop(context);
     } else {
@@ -72,6 +77,43 @@ class _RegisterScreenState extends State<RegisterScreen> {
           child: Column(
             children: [
               TextFormField(
+                controller: _cedulaController,
+                decoration: const InputDecoration(
+                  labelText: "Cédula",
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.badge),
+                ),
+                keyboardType: TextInputType.number,
+                validator: (value) =>
+                    value == null || value.isEmpty ? "Ingresa tu cédula" : null,
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _matriculaController,
+                decoration: const InputDecoration(
+                  labelText: "Matrícula",
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.confirmation_number),
+                ),
+                validator: (value) => value == null || value.isEmpty
+                    ? "Ingresa tu matrícula"
+                    : null,
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _telefonoController,
+                decoration: const InputDecoration(
+                  labelText: "Teléfono",
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.phone),
+                ),
+                keyboardType: TextInputType.phone,
+                validator: (value) => value == null || value.isEmpty
+                    ? "Ingresa tu teléfono"
+                    : null,
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
                 controller: _nombreController,
                 decoration: const InputDecoration(
                   labelText: "Nombre",
@@ -89,8 +131,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.person_outline),
                 ),
-                validator: (value) =>
-                    value == null || value.isEmpty ? "Ingresa tu apellido" : null,
+                validator: (value) => value == null || value.isEmpty
+                    ? "Ingresa tu apellido"
+                    : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
@@ -120,7 +163,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   prefixIcon: const Icon(Icons.lock),
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                      _obscurePassword
+                          ? Icons.visibility
+                          : Icons.visibility_off,
                     ),
                     onPressed: () {
                       setState(() {

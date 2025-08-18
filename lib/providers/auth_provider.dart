@@ -61,10 +61,9 @@ class AuthProvider extends ChangeNotifier {
     try {
       _user = await _authService.login(email, password);
 
-      if (_user != null) {
-        // Asignar token JWT después de login exitoso
-        _token =
-            'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiMDAwMDE3IiwiZW1haWwiOiJqdWFuTEBleGFtcGxlLmNvbSIsImV4cCI6MTc1NTc3MjgxM30=.jYamdSa5aS+aKIbelluXUNZ2KQK6HUFnAPArpuvBXsI=';
+      if (_user != null && _user!.token != null && _user!.token!.isNotEmpty) {
+        // Guardar el token real devuelto por la API
+        _token = _user!.token;
         await _saveSession(_user!, password);
         _setLoading(false);
         return true;
@@ -94,9 +93,8 @@ class AuthProvider extends ChangeNotifier {
       }
       // Login automático después de registro
       _user = await _authService.login(user.email, user.password);
-      if (_user != null) {
-        _token =
-            'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiMDAwMDE3IiwiZW1haWwiOiJqdWFuTEBleGFtcGxlLmNvbSIsImV4cCI6MTc1NTc3MjgxM30=.jYamdSa5aS+aKIbelluXUNZ2KQK6HUFnAPArpuvBXsI=';
+      if (_user != null && _user!.token != null && _user!.token!.isNotEmpty) {
+        _token = _user!.token;
         await _saveSession(_user!, user.password);
       }
       _setLoading(false);
